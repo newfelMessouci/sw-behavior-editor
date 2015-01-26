@@ -1,6 +1,6 @@
 SwBehaviorEditorView = require './sw-behavior-editor-view'
 {BufferedProcess} = require 'atom'
-#WizardRole = require './role-wizard'
+RoleWizard = require './role-wizard'
 
 module.exports =
   swBehaviorEditorView: null
@@ -25,10 +25,8 @@ module.exports =
     swBehaviorEditorViewState: @swBehaviorEditorView.serialize()
 
   newRole: ->
-    console.log 'New role'
-    #console.log atom.project.path
-    #@panel = atom.workspace.addModalPanel(item: new WizardRole())
-    #@panel.show()
+    wizard = new RoleWizard()
+    wizard.attach()
 
   build: ->
     command = atom.config.get('sw-behavior-editor.modelCompilerPath')
