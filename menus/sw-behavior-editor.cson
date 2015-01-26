@@ -1,0 +1,36 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle sw-behavior-editor'
+      'command': 'sw-behavior-editor:toggle'
+    }
+  ]
+  '.tree-view .directory': [
+      {
+          'label' : 'New Role'
+          'command' : 'sw-behavior-editor:new-role'
+      }
+  ]
+
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'sw-behavior-editor'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'sw-behavior-editor:toggle'
+        }
+      ]
+    ]
+  }
+  {
+      'label': 'SWORD'
+      'submenu': [
+          'label': 'Build'
+          'command': 'sw-behavior-editor:build'
+      ]
+  }
+]

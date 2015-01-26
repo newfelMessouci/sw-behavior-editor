@@ -1,0 +1,21 @@
+{
+  "name": "sw-behavior-editor",
+  "main": "./lib/sw-behavior-editor",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "activationCommands": {
+    "atom-workspace": [
+        "sw-behavior-editor:toggle",
+        "sw-behavior-editor:new-role",
+        "sw-behavior-editor:build"
+    ]
+  },
+  "repository": "https://github.com/atom/sw-behavior-editor",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+      "atom-space-pen-views": "^2.0.3"
+  }
+}
