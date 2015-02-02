@@ -32,7 +32,7 @@ class SwBehaviorEditorView
   toggle: ->
     console.log 'SwBehaviorEditorView was toggled!'
 
-    if @element.parentElement?
-      @element.remove()
-    else
-      atom.workspaceView.append(@element)
+    #if @element.parentElement?
+      #@element.remove()
+    #else
+      #atom.workspaceView.append(@element)

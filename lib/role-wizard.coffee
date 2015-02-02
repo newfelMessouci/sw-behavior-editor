@@ -8,7 +8,7 @@ module.exports =
                 @label 'Enter the role name:', class: 'icon', outlet: 'promptText'
                 @subview 'miniEditor', new TextEditorView(mini: true)
                 @div class: 'error-message', outlet: 'errorMessage'
-                
+
         initialize: () ->
             atom.commands.add @element,
                 'core:confirm': =>
@@ -17,11 +17,11 @@ module.exports =
                 'core:cancel': =>
                     @panel.destroy()
                     atom.workspace.getActivePane().activate()
-                
+
         attach: ->
             @panel = atom.workspace.addModalPanel(item: this.element)
             @miniEditor.focus()
-            
+
         createRole: (name) ->
             xmlFilePath = atom.project.getDirectories()[0]?.resolve(name) + ".xml"
             xml = """
