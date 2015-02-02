@@ -1,6 +1,8 @@
 SwBehaviorEditorView = require './sw-behavior-editor-view'
 {BufferedProcess} = require 'atom'
+RoleEditorView = require './role-editor-view'
 RoleWizard = require './role-wizard'
+path = require 'path'
 
 module.exports =
   swBehaviorEditorView: null
@@ -17,6 +19,9 @@ module.exports =
     @swBehaviorEditorView = new SwBehaviorEditorView(state.swBehaviorEditorViewState)
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:new-role': => @newRole()
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:build': => @build()
+    atom.workspace.addOpener (uri) ->
+        if path.extname(uri) is '.xml'
+            return new RoleEditorView(uri)
 
   deactivate: ->
     @swBehaviorEditorView.destroy()
