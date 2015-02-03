@@ -25,7 +25,16 @@ class RoleEditorView extends ScrollView
             @div class: 'block', =>
                 @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
+<<<<<<< HEAD
     initialize: (@uri, @behaviorEditor) ->
+=======
+    initialize: (@uri) ->
+        atom.commands.add 'atom-workspace', 'core:save': =>
+            if atom.workspace.getActivePaneItem() is this
+                @save()
+        atom.commands.add 'atom-workspace', 'core:save-all': =>
+                @save()
+>>>>>>> Trigger RoleEditorView.save when 'Save' or 'Save All' command  is issued
         @title = path.basename(@uri)
         @miniEditorName.setText(@title.replace(/\.[^/.]+$/, ""))
         @isCollapsed = false
@@ -84,3 +93,7 @@ class RoleEditorView extends ScrollView
     getURI: -> @uri
 
     getTitle: -> @title
+
+    save: ->
+        # Invoked twice if 'Save' command is issued
+        console.log "Should save!"
