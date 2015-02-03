@@ -27,7 +27,7 @@ module.exports =
             xml = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <role xmlns="http://www.masagroup.net/directia/schemas/bm" name="#{name}" source-version="1.0.0">
-                <role/>
+                </role>
             """
             fs.writeFileSync(xmlFilePath, xml)
             atom.workspace.open(xmlFilePath)

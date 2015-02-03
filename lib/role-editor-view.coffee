@@ -1,5 +1,7 @@
 {$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
 path = require 'path'
+xml2js = require 'xml2js'
+fs = require 'fs-plus'
 
 module.exports =
 class RoleEditorView extends ScrollView
@@ -29,6 +31,7 @@ class RoleEditorView extends ScrollView
     initialize: (@uri, @behaviorEditor) ->
 =======
     initialize: (@uri) ->
+        @load()
         atom.commands.add 'atom-workspace', 'core:save': =>
             if atom.workspace.getActivePaneItem() is this
                 @save()
@@ -36,7 +39,6 @@ class RoleEditorView extends ScrollView
                 @save()
 >>>>>>> Trigger RoleEditorView.save when 'Save' or 'Save All' command  is issued
         @title = path.basename(@uri)
-        @miniEditorName.setText(@title.replace(/\.[^/.]+$/, ""))
         @isCollapsed = false
         @skillItems = [ @miniEditorSkill.element ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
@@ -94,6 +96,23 @@ class RoleEditorView extends ScrollView
 
     getTitle: -> @title
 
+    load: ->
+        parser = new xml2js.Parser()
+        fs.readFile @uri, (err, data) =>
+            parser.parseString data, (err, result) =>
+                if result
+                    @fillView(result)
+                else
+                    @showError(err)
+
     save: ->
         # Invoked twice if 'Save' command is issued
         console.log "Should save!"
+
+    showError: (err) ->
+        console.log err
+
+    fillView: (model) ->
+        role = model.role
+        @miniEditorName.setText(role.$.name)
+        @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
