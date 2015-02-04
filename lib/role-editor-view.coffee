@@ -107,12 +107,28 @@ class RoleEditorView extends ScrollView
 
     save: ->
         # Invoked twice if 'Save' command is issued
-        console.log "Should save!"
+        name = @miniEditorName.getText()
+        doc =
+            'role':
+                '$':
+                    'name': name
+                    'source-version': '1.0.0'
+                    'xmlns': 'http://www.masagroup.net/directia/schemas/bm'
+        superRole = @miniEditorSuperRole.getText()
+        if superRole isnt ''
+            doc.role.$.extends = superRole
+        builder = new xml2js.Builder()
+        xml = builder.buildObject(doc)
+        fs.writeFileSync(@uri, xml)
 
     showError: (err) ->
-        console.log err
+        block = document.createElement('span')
+        block.classList.add('inline-block')
+        block.classList.add('highlight-error')
+        block.textContent = 'Error: ' + err.message
+        @element.appendChild(block)
 
-    fillView: (model) ->
-        role = model.role
+    fillView: (doc) ->
+        role = doc.role
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
