@@ -40,7 +40,6 @@ class RoleEditorView extends ScrollView
         @skillEditors = [ @miniEditorSkill ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
         @switchXMLButton.on 'click', (e) =>
-            console.log("Uri : " + @uri)
             atom.workspace.getActivePane().destroyActiveItem()
             @behaviorEditor.switchingXML = true
             atom.workspace.open(@uri)
@@ -58,28 +57,54 @@ class RoleEditorView extends ScrollView
                 e.currentTarget.classList.add("collapsed")
                 for skillElement in @skillItems
                     e.currentTarget.parentNode.removeChild(skillElement.parentNode)
+        @on 'blur', 'atom-text-editor', (e) =>
+            text = ''
+            if e.currentTarget is @miniEditorSuperRole.element
+                text = @miniEditorSuperRole.getText()
+            else if @skillItems.indexOf(e.currentTarget) >= 0
+                text = @skillEditors[@skillItems.indexOf(e.currentTarget)].getText()
+            if @isValidFullName(text)
+                e.currentTarget.classList.remove("invalid-uri")
+            else
+                e.currentTarget.classList.add("invalid-uri")
+
+
+
+    toUri: (text) ->
+        return atom.project.getPaths()[0] + "\\src\\" + text.replace(/\./g, '\\') + ".xml"
+
+    isValidFullName: (text) ->
+        if text isnt ''
+            uri = @toUri(text)
+            return fs.existsSync(uri)
+        else
+            return true
 
     setCallbackSkillEditor: (e) ->
         @currentSkillConfirm = atom.commands.add e,
             'core:confirm': =>
-                #item = document.createElement("LI")
-                #item.classList.add("list-item")
-                #textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
-                #item.appendChild(textEditor.element)
-                textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
-                skillElement = ( $$ ->
-                    @li class: 'list-item mini-editor-skill', =>
-                        @subview 'miniEditorSkill', textEditor)[0]
-                #$('.skill-ul')[0].appendChild(skillElement)
-                @miniEditorSkill.element.parentNode.parentNode.appendChild(skillElement)
-                #$('.skill-ul')[0].appendChild(( $$ ->
-                #    @li class: 'list-item', =>
-                #        @subview 'miniEditorSkill2', new TextEditorView(mini: true, placeholderText: "Enter skill name"))[0])
-                @skillItems.push(skillElement.firstElementChild)
-                @skillEditors.push(textEditor)
-                textEditor.focus()
-                @currentSkillConfirm.dispose()
-                @setCallbackSkillEditor(textEditor.element)
+                @confirmActiveSkillEditor()
+
+    confirmActiveSkillEditor: (text) ->
+        #item = document.createElement("LI")
+        #item.classList.add("list-item")
+        #textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
+        #item.appendChild(textEditor.element)
+        textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
+        skillElement = ( $$ ->
+            @li class: 'list-item mini-editor-skill', =>
+                @subview 'miniEditorSkill', textEditor)[0]
+        #$('.skill-ul')[0].appendChild(skillElement)
+        @miniEditorSkill.element.parentNode.parentNode.appendChild(skillElement)
+        #$('.skill-ul')[0].appendChild(( $$ ->
+        #    @li class: 'list-item', =>
+        #        @subview 'miniEditorSkill2', new TextEditorView(mini: true, placeholderText: "Enter skill name"))[0])
+        @skillItems.push(skillElement.firstElementChild)
+        @skillEditors[@skillEditors.length - 1].setText(text) if text?
+        @skillEditors.push(textEditor)
+        textEditor.focus()
+        @currentSkillConfirm.dispose()
+        @setCallbackSkillEditor(textEditor.element)
 
     getURI: -> @uri
 
@@ -109,6 +134,9 @@ class RoleEditorView extends ScrollView
         doc.role.skills = [
             skill: []
         ]
+        description = @editorDescription.getText()
+        if description isnt ''
+            doc.role.description = [description]
         for skillEditor in @skillEditors
             skillName = skillEditor.getText()
             if skillName isnt ''
@@ -131,6 +159,9 @@ class RoleEditorView extends ScrollView
         role = doc.role
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
+        if role.description
+            @editorDescription.setText(role.description[0])
         if role.skills and role.skills[0] isnt ''
             for skill in role.skills[0].skill
                 console.log skill.$.name
+                @confirmActiveSkillEditor(skill.$.name)
