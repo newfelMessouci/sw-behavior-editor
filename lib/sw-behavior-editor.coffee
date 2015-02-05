@@ -20,9 +20,6 @@ module.exports =
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:new-role': => @newRole()
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:build': => @build()
     atom.workspace.addOpener (uri) =>
-        console.log(this)
-        console.log(@switchingXML)
-        #console.log("Opener")
         if path.extname(uri) is '.xml'
             if not @switchingXML?
                 return new RoleEditorView(uri, this)

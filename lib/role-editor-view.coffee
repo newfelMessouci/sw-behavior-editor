@@ -28,11 +28,6 @@ class RoleEditorView extends ScrollView
     initialize: (@uri, @behaviorEditor) ->
         @title = path.basename(@uri)
         @miniEditorName.setText(@title.replace(/\.[^/.]+$/, ""))
-        #console.log(@editorDescription.getModel().getHeight())
-        #@editorDescription.getModel().setHeight(50000)
-        #console.log(@editorDescription.getModel().getHeight())
-        #console.log("getVisibleRowRange : " + @editorDescription.getModel().getVisibleRowRange())
-        #@editorDescription.getModel().setText("\n\n\n\n")
         @isCollapsed = false
         @skillItems = [ @miniEditorSkill.element ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
