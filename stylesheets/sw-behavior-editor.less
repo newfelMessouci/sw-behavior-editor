@@ -4,5 +4,37 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.sw-behavior-editor {
+.sw-behavior-editor-role-view {
+    background: #0a1c00;
+
+    .text-highlight{
+        font-size: 1.7em;
+    }
+
+    atom-text-editor .gutter, atom-text-editor::shadow .gutter{
+        width: 0em;
+        min-width: 0em;
+    }
+
+    atom-text-editor, atom-text-editor[mini], atom-text-editor::shadow, atom-text-editor::shadow[mini]{
+        border-top-style: solid;
+        border-top-width: 1px;
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+        height: 200px;
+        border-color: #58f907;
+    }
+
+    .mini-editor-skill{
+        atom-text-editor[mini], atom-text-editor::shadow[mini]{
+            border-color: #236302;
+        }
+        &:last-child atom-text-editor[mini], atom-text-editor::shadow[mini]{
+            border-color: #58f907;
+        }
+    }
 }

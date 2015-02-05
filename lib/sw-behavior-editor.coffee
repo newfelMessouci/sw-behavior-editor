@@ -19,9 +19,14 @@ module.exports =
     @swBehaviorEditorView = new SwBehaviorEditorView(state.swBehaviorEditorViewState)
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:new-role': => @newRole()
     atom.commands.add 'atom-workspace', 'sw-behavior-editor:build': => @build()
-    atom.workspace.addOpener (uri) ->
+    atom.workspace.addOpener (uri) =>
+        console.log(this)
+        console.log(@switchingXML)
+        #console.log("Opener")
         if path.extname(uri) is '.xml'
-            return new RoleEditorView(uri)
+            if not @switchingXML?
+                return new RoleEditorView(uri, this)
+            @switchingXML = null
 
   deactivate: ->
     @swBehaviorEditorView.destroy()

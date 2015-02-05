@@ -5,29 +5,42 @@ module.exports =
 class RoleEditorView extends ScrollView
 
     @content: ->
-        @div class: 'block', =>
+        @div class: 'block sw-behavior-editor-role-view', =>
             @div class: 'block', =>
-                @label 'Name:', class: 'text-highlight'
-                @subview 'miniEditorName', new TextEditorView(mini: true)
+                @div class: 'block', =>
+                    @label 'Name:', class: 'text-highlight'
+                    @subview 'miniEditorName', new TextEditorView(mini: true, placeholderText: "Enter role name")
+                @div class: 'block', =>
+                    @label 'Super Role:', class: 'text-highlight'
+                    @subview 'miniEditorSuperRole', new TextEditorView(mini: true, placeholderText: "Enter super role name")
+                @div class: 'block', =>
+                        @label 'Description:', class: 'text-highlight'
+                        @subview 'editorDescription', new TextEditorView(placeholderText: "Enter role description")
+                @ul class: 'list-tree has-collapsable-children skill-ul', =>
+                    @li class: 'list-nested-item skill-list', =>
+                        @div class: 'list-item', =>
+                            @label 'Skills', class: 'text-highlight'
+                    @li class: 'list-item mini-editor-skill', =>
+                        @subview 'miniEditorSkill', new TextEditorView(mini: true, placeholderText: "Enter skill name")
             @div class: 'block', =>
-                @label 'Super Role:', class: 'text-highlight'
-                @subview 'miniEditorSuperRole', new TextEditorView(mini: true, placeholderText: "Enter super role name")
-            @div class: 'block', =>
-                    @label 'Description:', class: 'text-highlight'
-                    @subview 'miniEditorDescription', new TextEditorView(placeholderText: "Enter role description")
-            @ul class: 'list-tree has-collapsable-children skill-ul', =>
-                @li class: 'list-nested-item skill-list', =>
-                    @div class: 'list-item', =>
-                        @label 'Skills', class: 'text-highlight'
-                @li class: 'list-item', =>
-                    @subview 'miniEditorSkill', new TextEditorView(mini: true, placeholderText: "Enter skill name")
+                @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
-    initialize: (@uri) ->
+    initialize: (@uri, @behaviorEditor) ->
         @title = path.basename(@uri)
         @miniEditorName.setText(@title.replace(/\.[^/.]+$/, ""))
+        #console.log(@editorDescription.getModel().getHeight())
+        #@editorDescription.getModel().setHeight(50000)
+        #console.log(@editorDescription.getModel().getHeight())
+        #console.log("getVisibleRowRange : " + @editorDescription.getModel().getVisibleRowRange())
+        #@editorDescription.getModel().setText("\n\n\n\n")
         @isCollapsed = false
         @skillItems = [ @miniEditorSkill.element ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
+        @switchXMLButton.on 'click', (e) =>
+            console.log("Uri : " + @uri)
+            atom.workspace.getActivePane().destroyActiveItem()
+            @behaviorEditor.switchingXML = true
+            atom.workspace.open(@uri)
         @on 'click', '.skill-list', (e) =>
             console.log(e)
             if @isCollapsed
@@ -36,7 +49,7 @@ class RoleEditorView extends ScrollView
                 console.log("Deuxieme")
                 for skillElement in @skillItems
                     item = document.createElement("li")
-                    item.classList.add("list-item")
+                    item.classList.add("list-item", "mini-editor-skill")
                     item.appendChild(skillElement)
                     e.currentTarget.parentNode.appendChild(item)
             else
@@ -59,7 +72,7 @@ class RoleEditorView extends ScrollView
 
                 textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
                 skillElement = ( $$ ->
-                    @li class: 'list-item', =>
+                    @li class: 'list-item mini-editor-skill', =>
                         @subview 'miniEditorSkill', textEditor)[0]
                 #$('.skill-ul')[0].appendChild(skillElement)
                 @miniEditorSkill.element.parentNode.parentNode.appendChild(skillElement)
