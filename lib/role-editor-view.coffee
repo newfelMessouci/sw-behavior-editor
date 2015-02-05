@@ -132,7 +132,9 @@ class RoleEditorView extends ScrollView
         @element.appendChild(block)
 
     fillView: (doc) ->
-        console.dir doc
         role = doc.role
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
+        if role.skills and role.skills[0] isnt ''
+            for skill in role.skills[0].skill
+                console.log skill.$.name
