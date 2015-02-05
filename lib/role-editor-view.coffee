@@ -1,5 +1,7 @@
 {$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
 path = require 'path'
+xml2js = require 'xml2js'
+fs = require 'fs-plus'
 
 module.exports =
 class RoleEditorView extends ScrollView
@@ -25,11 +27,21 @@ class RoleEditorView extends ScrollView
             @div class: 'block', =>
                 @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
+<<<<<<< HEAD
     initialize: (@uri, @behaviorEditor) ->
+=======
+    initialize: (@uri) ->
+        @load()
+        atom.commands.add 'atom-workspace', 'core:save': =>
+            if atom.workspace.getActivePaneItem() is this
+                @save()
+        atom.commands.add 'atom-workspace', 'core:save-all': =>
+                @save()
+>>>>>>> Trigger RoleEditorView.save when 'Save' or 'Save All' command  is issued
         @title = path.basename(@uri)
-        @miniEditorName.setText(@title.replace(/\.[^/.]+$/, ""))
         @isCollapsed = false
         @skillItems = [ @miniEditorSkill.element ]
+        @skillEditors = [ @miniEditorSkill ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
         @switchXMLButton.on 'click', (e) =>
             console.log("Uri : " + @uri)
@@ -37,11 +49,9 @@ class RoleEditorView extends ScrollView
             @behaviorEditor.switchingXML = true
             atom.workspace.open(@uri)
         @on 'click', '.skill-list', (e) =>
-            console.log(e)
             if @isCollapsed
                 @isCollapsed = false
                 e.currentTarget.classList.remove("collapsed")
-                console.log("Deuxieme")
                 for skillElement in @skillItems
                     item = document.createElement("li")
                     item.classList.add("list-item", "mini-editor-skill")
@@ -50,12 +60,8 @@ class RoleEditorView extends ScrollView
             else
                 @isCollapsed = true
                 e.currentTarget.classList.add("collapsed")
-                console.log("Premiere")
                 for skillElement in @skillItems
-                    console.log(e.currentTarget)
-                    console.log(e.currentTarget.parentNode)
                     e.currentTarget.parentNode.removeChild(skillElement.parentNode)
-
 
     setCallbackSkillEditor: (e) ->
         @currentSkillConfirm = atom.commands.add e,
@@ -64,7 +70,6 @@ class RoleEditorView extends ScrollView
                 #item.classList.add("list-item")
                 #textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
                 #item.appendChild(textEditor.element)
-
                 textEditor = new TextEditorView(mini: true, placeholderText: "Enter skill name")
                 skillElement = ( $$ ->
                     @li class: 'list-item mini-editor-skill', =>
@@ -74,9 +79,8 @@ class RoleEditorView extends ScrollView
                 #$('.skill-ul')[0].appendChild(( $$ ->
                 #    @li class: 'list-item', =>
                 #        @subview 'miniEditorSkill2', new TextEditorView(mini: true, placeholderText: "Enter skill name"))[0])
-                console.log(skillElement)
-                console.log(skillElement.parentNode)
                 @skillItems.push(skillElement.firstElementChild)
+                @skillEditors.push(textEditor)
                 textEditor.focus()
                 @currentSkillConfirm.dispose()
                 @setCallbackSkillEditor(textEditor.element)
@@ -84,3 +88,53 @@ class RoleEditorView extends ScrollView
     getURI: -> @uri
 
     getTitle: -> @title
+
+    load: ->
+        parser = new xml2js.Parser()
+        fs.readFile @uri, (err, data) =>
+            parser.parseString data, (err, result) =>
+                if result
+                    @fillView(result)
+                else
+                    @showError(err)
+
+    save: ->
+        # Invoked twice if 'Save' command is issued
+        name = @miniEditorName.getText()
+        doc =
+            'role':
+                '$':
+                    'name': name
+                    'source-version': '1.0.0'
+                    'xmlns': 'http://www.masagroup.net/directia/schemas/bm'
+        superRole = @miniEditorSuperRole.getText()
+        if superRole isnt ''
+            doc.role.$.extends = superRole
+        doc.role.skills = [
+            skill: []
+        ]
+        for skillEditor in @skillEditors
+            skillName = skillEditor.getText()
+            if skillName isnt ''
+                skillAttrs =
+                    '$':
+                        'name': skillEditor.getText()
+                doc.role.skills[0].skill.push(skillAttrs)
+        builder = new xml2js.Builder()
+        xml = builder.buildObject(doc)
+        fs.writeFileSync(@uri, xml)
+
+    showError: (err) ->
+        block = document.createElement('span')
+        block.classList.add('inline-block')
+        block.classList.add('highlight-error')
+        block.textContent = 'Error: ' + err.message
+        @element.appendChild(block)
+
+    fillView: (doc) ->
+        role = doc.role
+        @miniEditorName.setText(role.$.name)
+        @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
+        if role.skills and role.skills[0] isnt ''
+            for skill in role.skills[0].skill
+                console.log skill.$.name

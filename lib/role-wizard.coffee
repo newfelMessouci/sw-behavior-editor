@@ -1,5 +1,6 @@
 {TextEditorView, View} = require 'atom-space-pen-views'
 fs = require 'fs-plus'
+xml2js = require 'xml2js'
 
 module.exports =
     class RoleWizard extends View
@@ -24,10 +25,13 @@ module.exports =
 
         createRole: (name) ->
             xmlFilePath = atom.project.getDirectories()[0]?.resolve(name) + ".xml"
-            xml = """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <role xmlns="http://www.masagroup.net/directia/schemas/bm" name="#{name}" source-version="1.0.0">
-                <role/>
-            """
+            doc =
+                'role':
+                    '$':
+                        'name': name
+                        'source-version': '1.0.0'
+                        'xmlns': 'http://www.masagroup.net/directia/schemas/bm'
+            builder = new xml2js.Builder()
+            xml = builder.buildObject(doc)
             fs.writeFileSync(xmlFilePath, xml)
             atom.workspace.open(xmlFilePath)
