@@ -167,9 +167,8 @@ class RoleEditorView extends ScrollView
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
         if role.description
-            # Demo: Make sure description will not overflow view
-            text = role.description[0].substring(0, 300)
-            @editorDescription.setText(text)
+            #text = role.description[0].substring(0, 300)
+            @editorDescription.setText(role.description[0])
         if role.skills and role.skills[0] isnt ''
             for skill in role.skills[0].skill
                 @confirmActiveSkillEditor(skill.$.name)
