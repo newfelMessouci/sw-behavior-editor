@@ -37,6 +37,7 @@ class RoleEditorView extends ScrollView
                 @save()
         @title = path.basename(@uri)
         @isCollapsed = false
+        @editorDescription.element.classList.add('description-editor')
         @skillItems = [ @miniEditorSkill.element ]
         @skillEditors = [ @miniEditorSkill ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
