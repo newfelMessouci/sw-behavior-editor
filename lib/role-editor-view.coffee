@@ -28,6 +28,7 @@ class RoleEditorView extends ScrollView
                 @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
     initialize: (@uri, @behaviorEditor) ->
+        super
         @load()
         atom.commands.add 'atom-workspace', 'core:save': =>
             if atom.workspace.getActivePaneItem() is this
@@ -36,6 +37,7 @@ class RoleEditorView extends ScrollView
                 @save()
         @title = path.basename(@uri)
         @isCollapsed = false
+        @editorDescription.element.classList.add('description-editor')
         @skillItems = [ @miniEditorSkill.element ]
         @skillEditors = [ @miniEditorSkill ]
         @setCallbackSkillEditor(@miniEditorSkill.element)
@@ -67,8 +69,13 @@ class RoleEditorView extends ScrollView
                 e.currentTarget.classList.remove("invalid-uri")
             else
                 e.currentTarget.classList.add("invalid-uri")
-
-
+        @on 'keydown', 'atom-text-editor', (e) =>
+            if e.ctrlKey and e.keyCode is 68 # ctrl-d
+                text = ''
+                if e.currentTarget is @miniEditorSuperRole.element
+                    text = @miniEditorSuperRole.getText()
+                if text isnt ''
+                    atom.workspace.open(@toUri(text))
 
     toUri: (text) ->
         return atom.project.getPaths()[0] + "\\src\\" + text.replace(/\./g, '\\') + ".xml"
@@ -160,8 +167,8 @@ class RoleEditorView extends ScrollView
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
         if role.description
+            #text = role.description[0].substring(0, 300)
             @editorDescription.setText(role.description[0])
         if role.skills and role.skills[0] isnt ''
             for skill in role.skills[0].skill
-                console.log skill.$.name
                 @confirmActiveSkillEditor(skill.$.name)

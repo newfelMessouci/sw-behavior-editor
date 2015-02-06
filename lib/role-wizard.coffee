@@ -6,7 +6,7 @@ module.exports =
     class RoleWizard extends View
         @content: () ->
             @div class: 'block', =>
-                @label 'Enter the role name:', class: 'icon', outlet: 'promptText'
+                @label 'Enter the role name:', class: 'icon icon-file-text', outlet: 'promptText'
                 @subview 'miniEditor', new TextEditorView(mini: true)
                 @div class: 'error-message', outlet: 'errorMessage'
 
@@ -23,15 +23,22 @@ module.exports =
 
             atom.commands.add @element,
                 'core:confirm': =>
-                    @panel.destroy()
                     @createRole(@miniEditor.getText())
+                    @close()
                 'core:cancel': =>
-                    @panel.destroy()
-                    atom.workspace.getActivePane().activate()
+                    @close()
+            @miniEditor.on 'blur', =>
+                @close()
 
         attach: ->
             @panel = atom.workspace.addModalPanel(item: this.element)
             @miniEditor.focus()
+
+        close: ->
+            panelToDestroy = @panel
+            @panel = null
+            panelToDestroy?.destroy()
+            atom.workspace.getActivePane().activate()
 
         createRole: (name) ->
             #xmlFilePath = atom.project.getDirectories()[0]?.resolve(name) + ".xml"
@@ -43,9 +50,6 @@ module.exports =
                 category += uriComponent + "."
             fullName = category + name
             xmlFilePath = @uri + "\\" + name + ".xml"
-            console.log(uriSplit)
-            console.log xmlFilePath
-            console.log fullName
             doc =
                 'role':
                     '$':
