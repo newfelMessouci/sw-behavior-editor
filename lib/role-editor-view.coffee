@@ -67,8 +67,13 @@ class RoleEditorView extends ScrollView
                 e.currentTarget.classList.remove("invalid-uri")
             else
                 e.currentTarget.classList.add("invalid-uri")
-
-
+        @on 'keydown', 'atom-text-editor', (e) =>
+            if e.ctrlKey and e.keyCode is 68 # ctrl-d
+                text = ''
+                if e.currentTarget is @miniEditorSuperRole.element
+                    text = @miniEditorSuperRole.getText()
+                if text isnt ''
+                    atom.workspace.open(@toUri(text))
 
     toUri: (text) ->
         return atom.project.getPaths()[0] + "\\src\\" + text.replace(/\./g, '\\') + ".xml"
@@ -163,5 +168,4 @@ class RoleEditorView extends ScrollView
             @editorDescription.setText(role.description[0])
         if role.skills and role.skills[0] isnt ''
             for skill in role.skills[0].skill
-                console.log skill.$.name
                 @confirmActiveSkillEditor(skill.$.name)
