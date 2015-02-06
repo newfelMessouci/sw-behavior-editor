@@ -5,18 +5,19 @@
 @import "ui-variables";
 
 .sw-behavior-editor-role-view {
+    overflow: auto;
     background: #0a1c00;
 
-    .text-highlight{
+    .text-highlight {
         font-size: 1.7em;
     }
 
-    atom-text-editor .gutter, atom-text-editor::shadow .gutter{
+    atom-text-editor .gutter, atom-text-editor::shadow .gutter {
         width: 0em;
         min-width: 0em;
     }
 
-    atom-text-editor, atom-text-editor[mini], atom-text-editor::shadow, atom-text-editor::shadow[mini]{
+    atom-text-editor, atom-text-editor[mini], atom-text-editor::shadow, atom-text-editor::shadow[mini] {
         border-top-style: solid;
         border-top-width: 1px;
         border-right-style: solid;
@@ -29,16 +30,16 @@
         border-color: #58f907;
     }
 
-    .mini-editor-skill{
-        atom-text-editor[mini], atom-text-editor::shadow[mini]{
+    .mini-editor-skill {
+        atom-text-editor[mini], atom-text-editor::shadow[mini] {
             border-color: #236302;
         }
-        &:last-child atom-text-editor[mini], atom-text-editor::shadow[mini]{
+        &:last-child atom-text-editor[mini], atom-text-editor::shadow[mini] {
             border-color: #58f907;
         }
     }
 
-    .invalid-uri{
+    .invalid-uri {
         color: red;
     }
 }

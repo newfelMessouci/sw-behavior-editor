@@ -28,6 +28,7 @@ class RoleEditorView extends ScrollView
                 @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
     initialize: (@uri, @behaviorEditor) ->
+        super
         @load()
         atom.commands.add 'atom-workspace', 'core:save': =>
             if atom.workspace.getActivePaneItem() is this
