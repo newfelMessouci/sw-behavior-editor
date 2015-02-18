@@ -37,9 +37,8 @@ module.exports =
 
   build: ->
     command = atom.config.get('sw-behavior-editor.modelCompilerPath')
-    #args = [ '-rootpath', "E:/models/sw.models/data/data/models/ada/decisional/dia5/models/src", '-rootpath', "E:/models/sw.models/data/data/models/ada/decisional/dia5/models/directia.core/directia.core.bml", '-licpath', "E:/SW_INSTALL/applications/nmi.lic", "E:/models/sw.models/data/data/models/ada/decisional/dia5/models/src"]
     licensePath = atom.config.get('sw-behavior-editor.licensePath')
-    args = [ '-rootpath', atom.project.path + "/src", '-rootpath', atom.project.path + "/directia.core/directia.core.bml", '-licpath', licensePath, atom.project.path + "/src" ]
+    args = [ '-rootpath', atom.project.path + "/src", '-rootpath', atom.project.path + "/directia.core", '-licpath', licensePath, atom.project.path + "/src" ]
     stdout = (output) -> console.log(output)
     stderr = (output) -> console.log("Error : " + output)
     exit = (code) -> if code is 0 then console.log("Build successful") else console.log("Build failed")
