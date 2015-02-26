@@ -1,4 +1,5 @@
 {$, $$, ScrollView, TextEditorView} = require 'atom-space-pen-views'
+EntitySelectView = require './entity-select-view'
 path = require 'path'
 xml2js = require 'xml2js'
 fs = require 'fs-plus'
@@ -24,6 +25,12 @@ class RoleEditorView extends ScrollView
                             @label 'Skills', class: 'text-highlight'
                     @li class: 'list-item mini-editor-skill', =>
                         @subview 'miniEditorSkill', new TextEditorView(mini: true, placeholderText: "Enter skill name")
+                        #@div class: 'select-list', =>
+                        #    @ol class: 'list-group', =>
+                        #        @li class: 'selected', 'one'
+                        #        @li 'two'
+                        #        @li 'three'
+
             @div class: 'block', =>
                 @button outlet: 'switchXMLButton', class: 'btn', 'Switch to XML Text Editor'
 
@@ -76,6 +83,11 @@ class RoleEditorView extends ScrollView
                     text = @miniEditorSuperRole.getText()
                 if text isnt ''
                     atom.workspace.open(@toUri(text))
+        @on 'focus', '.mini-editor-skill atom-text-editor', (e) =>
+            @entitySelectView = new EntitySelectView(@behaviorEditor.index, @skillEditors[@skillItems.indexOf(e.currentTarget)])
+            @entitySelectView.attach()
+        @on 'blur', '.mini-editor-skill atom-text-editor', (e) =>
+            #@entitySelectView?.detach()
 
     toUri: (text) ->
         return atom.project.getPaths()[0] + "\\src\\" + text.replace(/\./g, '\\') + ".xml"
