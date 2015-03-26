@@ -9,3 +9,5 @@
 # https://atom.io/docs/latest/advanced/keymaps
 '.workspace':
   'ctrl-alt-o': 'sw-behavior-editor:toggle'
+  'up': 'core:move-up'
+  'down': 'core:move-down'

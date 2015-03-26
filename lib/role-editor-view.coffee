@@ -23,6 +23,7 @@ class RoleEditorView extends ScrollView
                     @li class: 'list-nested-item skill-list', =>
                         @div class: 'list-item', =>
                             @label 'Skills', class: 'text-highlight'
+
                     @li class: 'list-item mini-editor-skill', =>
                         @subview 'miniEditorSkill', new TextEditorView(mini: true, placeholderText: "Enter skill name")
                         #@div class: 'select-list', =>
@@ -87,7 +88,7 @@ class RoleEditorView extends ScrollView
             @entitySelectView = new EntitySelectView(@behaviorEditor.index, @skillEditors[@skillItems.indexOf(e.currentTarget)])
             @entitySelectView.attach()
         @on 'blur', '.mini-editor-skill atom-text-editor', (e) =>
-            #@entitySelectView?.detach()
+            @entitySelectView?.detach()
 
     toUri: (text) ->
         return atom.project.getPaths()[0] + "\\src\\" + text.replace(/\./g, '\\') + ".xml"
