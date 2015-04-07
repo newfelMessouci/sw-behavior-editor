@@ -86,7 +86,7 @@ class RoleEditorView extends ScrollView
                 if text isnt ''
                     atom.workspace.open(@toUri(text))
         @on 'focus', '.mini-editor-skill atom-text-editor', (e) =>
-            @entitySelectView = new EntitySelectView(@behaviorEditor.index, @skillEditors[@skillItems.indexOf(e.currentTarget)])
+            @entitySelectView = new EntitySelectView(@behaviorEditor.index, 'skill', @skillEditors[@skillItems.indexOf(e.currentTarget)])
             @entitySelectView.attach()
         @on 'blur', '.mini-editor-skill atom-text-editor', (e) =>
             @entitySelectView?.detach()

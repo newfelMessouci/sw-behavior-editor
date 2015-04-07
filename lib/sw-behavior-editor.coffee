@@ -3,6 +3,7 @@ SwBehaviorEditorView = require './sw-behavior-editor-view'
 RoleEditorView = require './role-editor-view'
 RoleWizard = require './role-wizard'
 path = require 'path'
+xml2js = require 'xml2js'
 
 module.exports =
   swBehaviorEditorView: null
@@ -26,7 +27,7 @@ module.exports =
             if not @switchingXML?
                 return new RoleEditorView(uri, this)
             @switchingXML = null
-    #console.dir index
+    #console.dir @index
 
   deactivate: ->
     @swBehaviorEditorView.destroy()
@@ -53,12 +54,14 @@ module.exports =
       @src = root.getSubdirectory('src')
       @callbacks = {}
       @files = @getXMLFiles(@src)
-      fullNames = []
+      entries = [] # index entries
       for file in @files
           if path.extname(file) is '.xml'
               fullName = @getFullName(file)
-              fullNames.push({name: fullName})
-      return fullNames
+              entry = {name: fullName}
+              @setEntityType(file, entry) # asynchronously
+              entries.push(entry)
+      return entries
 
   getXMLFiles: (dir) ->
       files = []
@@ -96,3 +99,16 @@ module.exports =
   getFullName: (path) ->
       relPath = @src.relativize(path)
       relPath.replace('.xml', '').replace(/\\/g, '.')
+
+  setEntityType: (path, indexEntry) ->
+      parser = new xml2js.Parser()
+      fs.readFile path, (err, data) =>
+          parser.parseString data, (err, doc) =>
+              if doc
+                  # Return the name of the root element, if any
+                  roots = (root for own root of doc)
+                  if roots.length
+                      indexEntry.type = roots[0]
+              else
+                  console.log err
+    
