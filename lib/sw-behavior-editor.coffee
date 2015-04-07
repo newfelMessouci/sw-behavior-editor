@@ -3,6 +3,7 @@ SwBehaviorEditorView = require './sw-behavior-editor-view'
 RoleEditorView = require './role-editor-view'
 RoleWizard = require './role-wizard'
 path = require 'path'
+xml2js = require 'xml2js'
 
 module.exports =
   swBehaviorEditorView: null
@@ -26,7 +27,7 @@ module.exports =
             if not @switchingXML?
                 return new RoleEditorView(uri, this)
             @switchingXML = null
-    #console.dir index
+    #console.dir @index
 
   deactivate: ->
     @swBehaviorEditorView.destroy()
@@ -41,7 +42,8 @@ module.exports =
   build: ->
     command = atom.config.get('sw-behavior-editor.modelCompilerPath')
     licensePath = atom.config.get('sw-behavior-editor.licensePath')
-    args = [ '-rootpath', atom.project.path + "/src", '-rootpath', atom.project.path + "/directia.core", '-licpath', licensePath, atom.project.path + "/src" ]
+    projectPath =  atom.project.getPaths()[0]
+    args = [ '-rootpath', projectPath + "/src", '-rootpath', projectPath + "/directia.core", '-licpath', licensePath, projectPath + "/src" ]
     stdout = (output) -> console.log(output)
     stderr = (output) -> console.log("Error : " + output)
     exit = (code) -> if code is 0 then console.log("Build successful") else console.log("Build failed")
@@ -52,12 +54,14 @@ module.exports =
       @src = root.getSubdirectory('src')
       @callbacks = {}
       @files = @getXMLFiles(@src)
-      fullNames = []
+      entries = [] # index entries
       for file in @files
           if path.extname(file) is '.xml'
               fullName = @getFullName(file)
-              fullNames.push({name: fullName})
-      return fullNames
+              entry = {name: fullName}
+              @setEntityType(file, entry) # asynchronously
+              entries.push(entry)
+      return entries
 
   getXMLFiles: (dir) ->
       files = []
@@ -75,9 +79,6 @@ module.exports =
       return files
 
   rename: (oldPath, newPath, newFile) ->
-      console.log "Old path: " + oldPath
-      console.log "New path: " + newPath
-
       i = @files.indexOf(oldPath)
       if i < 0
           console.log "Old path not found in index"
@@ -98,3 +99,16 @@ module.exports =
   getFullName: (path) ->
       relPath = @src.relativize(path)
       relPath.replace('.xml', '').replace(/\\/g, '.')
+
+  setEntityType: (path, indexEntry) ->
+      parser = new xml2js.Parser()
+      fs.readFile path, (err, data) =>
+          parser.parseString data, (err, doc) =>
+              if doc
+                  # Return the name of the root element, if any
+                  roots = (root for own root of doc)
+                  if roots.length
+                      indexEntry.type = roots[0]
+              else
+                  console.log err
+    

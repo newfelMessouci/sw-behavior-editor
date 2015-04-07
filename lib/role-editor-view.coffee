@@ -2,6 +2,7 @@
 EntitySelectView = require './entity-select-view'
 path = require 'path'
 xml2js = require 'xml2js'
+xml = require 'xml'
 fs = require 'fs-plus'
 
 module.exports =
@@ -85,7 +86,7 @@ class RoleEditorView extends ScrollView
                 if text isnt ''
                     atom.workspace.open(@toUri(text))
         @on 'focus', '.mini-editor-skill atom-text-editor', (e) =>
-            @entitySelectView = new EntitySelectView(@behaviorEditor.index, @skillEditors[@skillItems.indexOf(e.currentTarget)])
+            @entitySelectView = new EntitySelectView(@behaviorEditor.index, 'skill', @skillEditors[@skillItems.indexOf(e.currentTarget)])
             @entitySelectView.attach()
         @on 'blur', '.mini-editor-skill atom-text-editor', (e) =>
             @entitySelectView?.detach()
@@ -142,31 +143,32 @@ class RoleEditorView extends ScrollView
     save: ->
         # Invoked twice if 'Save' command is issued
         name = @miniEditorName.getText()
-        doc =
-            'role':
-                '$':
-                    'name': name
-                    'source-version': '1.0.0'
-                    'xmlns': 'http://www.masagroup.net/directia/schemas/bm'
+        role = [{ '_attr':
+            'name': name
+            'source-version': '1.0.0'
+            'xmlns': 'http://www.masagroup.net/directia/schemas/bm'
+        }]
         superRole = @miniEditorSuperRole.getText()
         if superRole isnt ''
-            doc.role.$.extends = superRole
-        doc.role.skills = [
-            skill: []
-        ]
+            role[0]._attr.extends = superRole
         description = @editorDescription.getText()
         if description isnt ''
-            doc.role.description = [description]
+            role.push({'description': description})
+        skills = []
         for skillEditor in @skillEditors
             skillName = skillEditor.getText()
             if skillName isnt ''
-                skillAttrs =
-                    '$':
-                        'name': skillEditor.getText()
-                doc.role.skills[0].skill.push(skillAttrs)
-        builder = new xml2js.Builder()
-        xml = builder.buildObject(doc)
-        fs.writeFileSync(@uri, xml)
+                skill = [
+                    {'_attr': 
+                        {'name': skillEditor.getText()}
+                    }
+                ]
+                skills.push({skill: skill})
+        if skills.length
+            role.push({'skills': skills})
+        console.dir role
+        xmlDocString = xml({'role': role}, {declaration: true, indent: '    '}) # 4 spaces indent
+        fs.writeFileSync(@uri, xmlDocString)
 
     showError: (err) ->
         block = document.createElement('span')

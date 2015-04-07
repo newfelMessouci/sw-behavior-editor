@@ -3,7 +3,7 @@ fuzzyFilter = require('fuzzaldrin').filter
 
 module.exports =
 class EntitySelectView extends View
-  constructor: (@index, @editor) ->
+  constructor: (@index, @entityType, @editor) ->
       itemDiv = document.createElement('div')
       itemDiv.classList.add('select-list')
       @itemOl = document.createElement('ol')
@@ -76,10 +76,11 @@ class EntitySelectView extends View
 
   populateList: ->
     filterQuery = @editor.getText()
+    entries = (entry for entry in @index when entry.type is @entityType)
     if filterQuery.length
-        filteredItems = fuzzyFilter(@index, filterQuery, key: "name")
+        filteredItems = fuzzyFilter(entries, filterQuery, key: "name")
     else
-        filteredItems = @index
+        filteredItems = entries
 
     $(@itemOl).empty()
     for i in [0...filteredItems.length]
