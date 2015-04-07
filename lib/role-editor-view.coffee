@@ -166,7 +166,6 @@ class RoleEditorView extends ScrollView
                 skills.push({skill: skill})
         if skills.length
             role.push({'skills': skills})
-        console.dir role
         xmlDocString = xml({'role': role}, {declaration: true, indent: '    '}) # 4 spaces indent
         fs.writeFileSync(@uri, xmlDocString)
 
@@ -182,8 +181,7 @@ class RoleEditorView extends ScrollView
         @miniEditorName.setText(role.$.name)
         @miniEditorSuperRole.setText(role.$.extends) if role.$.extends
         if role.description
-            #text = role.description[0].substring(0, 300)
             @editorDescription.setText(role.description[0])
-        if role.skills and role.skills[0] isnt ''
+        if role.skills and typeof role.skills[0] isnt 'string'
             for skill in role.skills[0].skill
                 @confirmActiveSkillEditor(skill.$.name)
