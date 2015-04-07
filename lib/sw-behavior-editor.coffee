@@ -41,7 +41,8 @@ module.exports =
   build: ->
     command = atom.config.get('sw-behavior-editor.modelCompilerPath')
     licensePath = atom.config.get('sw-behavior-editor.licensePath')
-    args = [ '-rootpath', atom.project.path + "/src", '-rootpath', atom.project.path + "/directia.core", '-licpath', licensePath, atom.project.path + "/src" ]
+    projectPath =  atom.project.getPaths()[0]
+    args = [ '-rootpath', projectPath + "/src", '-rootpath', projectPath + "/directia.core", '-licpath', licensePath, projectPath + "/src" ]
     stdout = (output) -> console.log(output)
     stderr = (output) -> console.log("Error : " + output)
     exit = (code) -> if code is 0 then console.log("Build successful") else console.log("Build failed")
@@ -75,9 +76,6 @@ module.exports =
       return files
 
   rename: (oldPath, newPath, newFile) ->
-      console.log "Old path: " + oldPath
-      console.log "New path: " + newPath
-
       i = @files.indexOf(oldPath)
       if i < 0
           console.log "Old path not found in index"
