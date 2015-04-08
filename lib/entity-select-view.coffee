@@ -33,31 +33,26 @@ class EntitySelectView extends View
           @selectItemView($(e.target).closest('li'))
           e.preventDefault()
 
+      #$(@itemOl).on 'dblclick', 'li', =>
+      # @confirm()
+
       $(@editor.element).on 'core:move-up', (e) =>
-          console.log "Move up"
           @selectPreviousItemView()
           false
       $(@editor.element).on 'core:move-down', (e) =>
-          console.log "Move down"
           @selectNextItemView()
           false
       $(@editor.element).on 'core:move-to-top', =>
-          console.log "Move to top"
           @selectItemView($(@itemOl).find('li:first'))
           $(@itemOl).scrollToTop()
           false
       $(@editor.element).on 'core:move-to-bottom', =>
-          console.log "Move to bottom"
           @selectItemView($(@itemOl).find('li:last'))
           $(@itemOl).scrollToBottom()
           false
       $(@editor.element).on 'core:confirm', =>
-          @editor.setText(@getSelectedItemView().text())
-          @editor.element.classList.remove("invalid-uri")
+          @confirm()
 
-
-
-      @cptFocus = 0
       @panel.tabIndex = "-1"
 
   attach: ->
@@ -71,6 +66,10 @@ class EntitySelectView extends View
   detach: ->
       @editor.element.parentNode.removeChild(@panel)
 
+  confirm: ->
+      @editor.setText(@getSelectedItemView().text())
+      @editor.element.classList.remove("invalid-uri")
+      
   viewForItem: ({name}) ->
     $$ -> @li(name)
 
