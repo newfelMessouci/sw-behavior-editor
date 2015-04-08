@@ -30,7 +30,7 @@ class SwBehaviorEditorView
 
   # Toggle the visibility of this view
   toggle: ->
-    console.log 'SwBehaviorEditorView was toggled!'
+    console.log 'sw-behavior-editor plugin is activated!'
 
     #if @element.parentElement?
       #@element.remove()

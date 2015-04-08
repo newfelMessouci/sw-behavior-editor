@@ -4,6 +4,7 @@ RoleEditorView = require './role-editor-view'
 RoleWizard = require './role-wizard'
 path = require 'path'
 xml2js = require 'xml2js'
+_ = require 'underscore-plus'
 
 module.exports =
   swBehaviorEditorView: null
@@ -24,7 +25,9 @@ module.exports =
     console.log 'model indexed'
     atom.workspace.addOpener (uri) =>
         if path.extname(uri) is '.xml'
-            if not @switchingXML?
+            name = @getFullName(uri)
+            entry = @getIndexEntry(name)
+            if not @switchingXML? and entry?.type is 'role'
                 return new RoleEditorView(uri, this)
             @switchingXML = null
     #console.dir @index
@@ -112,3 +115,6 @@ module.exports =
               else
                   console.log err
     
+  getIndexEntry: (name) ->
+      return _.find(@index, (entry) -> return entry.name is name)
+      
