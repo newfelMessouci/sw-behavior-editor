@@ -104,6 +104,7 @@ module.exports =
       relPath.replace('.xml', '').replace(/\\/g, '.')
 
   setEntityType: (path, indexEntry) ->
+      fs = require 'fs'
       parser = new xml2js.Parser()
       fs.readFile path, (err, data) =>
           parser.parseString data, (err, doc) =>
